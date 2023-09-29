@@ -1,61 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:practice/Home/home.dart';
+import 'package:practice/demo.dart';
+
+
+
+/// Creating global Variable
+ValueNotifier<int> counterVariable = ValueNotifier(0);
+
 
 void main() {
   runApp(const MyApp());
-}
-
-class NewWidget extends StatefulWidget {
-  const NewWidget({Key? key}) : super(key: key);
-
-  @override
-  State<NewWidget> createState() => _NewWidgetState();
-}
-
-class _NewWidgetState extends State<NewWidget> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-  }
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-  @override
-  void deactivate() {
-    // TODO: implement deactivate
-    super.deactivate();
-  }
-  @override
-  void didUpdateWidget(covariant NewWidget oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-  }
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    // TODO: implement debugFillProperties
-    super.debugFillProperties(properties);
-  }
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class New extends StatelessWidget {
-  const New({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
 }
 
 
@@ -65,15 +19,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const DemoMainScreen(),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -84,26 +40,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  /// local Variable
   int _counter = 0;
 
+ @override
+  void initState() {
+    super.initState();
+  }
+
+  /// through setState
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
   }
 
-  void _decrementCounter() {
-    setState(() {
-      _counter--;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+   print("rebuild");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+
       ),
       body: Center(
         child: Column(
@@ -113,17 +73,56 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            /// before valueNotifier
+            // Text(
+            //   '$_counter',
+            //   style: Theme.of(context).textTheme.headlineMedium,
+            // ),
+
+            /// after valueNotifier
+            ValueListenableBuilder(
+                valueListenable:
+            counterVariable, builder: (context,counter,child){
+                  return Text(counter.toString());
+            }),
+
+            TextButton(onPressed:(){
+             Navigator.of(context).push(MaterialPageRoute(builder:
+                 (context)=> Home(counterValue: counterVariable.value,)));
+            },child:const Text('Click')),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        children: [
+          Expanded(
+            child: FloatingActionButton(
+              onPressed: (){
+                counterVariable.value--;
+              },
+              tooltip: 'Decrement',
+              child: const Icon(Icons.remove),
+            ),
+          ),
+          Expanded(
+            child: FloatingActionButton(
+              onPressed: (){
+                counterVariable.value++;
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
+          ),
+          Expanded(
+            child: FloatingActionButton(
+              onPressed: (){
+                counterVariable.value=0;
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.lock_reset),
+            ),
+          ),
+        ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
